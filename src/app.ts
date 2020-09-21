@@ -1,6 +1,6 @@
 import Axios from "axios-observable";
 import {map} from "rxjs/operators";
-import {Observable, of, zip} from "rxjs";
+import {zip} from "rxjs";
 import {AxiosResponse} from "axios";
 
 interface Name {
@@ -32,7 +32,7 @@ interface DailyData {
 }
 
 interface Auth {
-    token: string | undefined
+    token: string
 }
 
 interface Definition {
@@ -67,5 +67,12 @@ function get(auth: Auth) {
     return promise;
 }
 
-const apiKey = process.env.API_KEY;
-get({token: apiKey}).then(result => console.log(result[0].data.name))
+function env(key: string): string {
+    const value = process.env[key];
+    if (value != undefined) {
+        return value;
+    }
+    throw Error(`${key} not found in environment.`);
+}
+
+get({token: env("API_KEY")}).then(result => console.log(result[0].data.name))
